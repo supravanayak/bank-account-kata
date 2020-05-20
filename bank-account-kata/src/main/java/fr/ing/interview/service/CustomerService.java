@@ -17,11 +17,4 @@ public interface CustomerService {
 
 	Customer UpdateCusomter(Customer customer);
 
-	Customer findByUsername(String username);
-	Customer findByEmail(String email);
-	
-	boolean checkCustomerExists(String username, String email);
-	boolean checkUsernameExists(String username);
-	boolean checkEmailExists(String email);
-
 }

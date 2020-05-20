@@ -26,6 +26,7 @@ public class TransactionController {
 	@GetMapping("/displayAccountTransaction/{accountNumber}")
 	public ResponseEntity<List<Transaction>> displayAccountTransaction(@PathVariable(value = "accountNumber") Integer accountNumber) throws ResourceNotFoundException{
 		List<Transaction> transactioList =transactionService.findByAccountNumber(accountNumber);
+		logger.info("List of Transaction as per accountNumber:"+ transactioList);
 		return ResponseEntity.ok().body(transactioList);		
 	}
 

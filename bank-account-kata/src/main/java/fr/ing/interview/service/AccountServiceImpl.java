@@ -36,7 +36,8 @@ public class AccountServiceImpl implements AccountService{
 		Account account = new Account();
 		account.setAccountBalance(new BigDecimal(0.0));
 		account.setAccountNumber(accountNumberGeneration());
-		accountDao.save(account);			
+		accountDao.save(account);
+		logger.info("AccountCreate"+account);
 		return accountDao.findByAccountNumber(account.getAccountNumber());
 	}
 
@@ -46,16 +47,21 @@ public class AccountServiceImpl implements AccountService{
 		if(amount > DepositMoney) {
 		account.setAccountBalance(account.getAccountBalance().add(new BigDecimal(amount)));
 		accountDao.save(account);
-		Date date = new Date();
-		saveTransaction(amount, account, date);		
+		logger.info("Amount Deposited :"+amount);
+		Date date = new Date();	
+		String description = "Deposit to Account";
+		saveTransaction(amount, account, date,description);	
+		logger.info("Transaction Successful");
 		}else {
+			logger.error("Deposit money from a customer to his account, is allowed when superior to €0.01"+amount);
 			throw new MinimumAmountException(amount);
+			
 		}
 	}
 
 
-	private void saveTransaction(double amount, Account account, Date date) {
-		Transaction transaction = new Transaction(date, "Deposit to Account","Account", "Finished", amount, account.getAccountBalance(), account.getAccountNumber());
+	private void saveTransaction(double amount, Account account, Date date,String description) {
+		Transaction transaction = new Transaction(date, description,"Account", "Finished", amount, account.getAccountBalance(), account.getAccountNumber());
 		transactionService.saveDepositTransaction(transaction);
 	}
 
@@ -64,8 +70,11 @@ public class AccountServiceImpl implements AccountService{
 		Account account = findByAccountNumber(accountNumber);
 		account.setAccountBalance(account.getAccountBalance().subtract(new BigDecimal(amount)));
 		accountDao.save(account);
+		logger.info("Amount withdraw completed :"+amount);
 		Date date = new Date();
-		saveTransaction(amount, account, date);	
+		String description = "Withdraw from Account";
+		saveTransaction(amount, account, date,description);	
+		logger.info("Transaction Successful");
 	}
 	
 	private int accountNumberGeneration() {

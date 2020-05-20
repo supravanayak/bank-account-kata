@@ -16,19 +16,22 @@ public class TransactionServiceImpl implements TransactionService{
 	private static final Logger logger = LoggerFactory.getLogger(TransactionServiceImpl.class);
 	@Autowired
 	private TransactionDao transactionDao ;
-	
+
 	@Override
 	public void saveDepositTransaction(Transaction Transaction) {
+		logger.info("Deposit Transaction Started :", Transaction);
 		transactionDao.save(Transaction);		
 	}
 
 	@Override
 	public void saveWithdrawTransaction(Transaction Transaction) {
+		logger.info("Withdraw Transaction Started :", Transaction);
 		transactionDao.save(Transaction);		
 	}
 
 	@Override
 	public List<Transaction> findByAccountNumber(int accountNumber) {
-		 List<Transaction> transactionList = transactionDao.findByAccountNumber(accountNumber);
+		logger.info("Retrieve Transaction details for:"+accountNumber);
+		List<Transaction> transactionList = transactionDao.findByAccountNumber(accountNumber);
 		return transactionList;
 	}}

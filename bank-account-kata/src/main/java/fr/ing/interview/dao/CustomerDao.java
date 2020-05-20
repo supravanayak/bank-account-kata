@@ -7,4 +7,5 @@ import fr.ing.interview.domain.Customer;
 
 @Repository
 public interface CustomerDao extends CrudRepository<Customer, Long>{
-	}
+	
+}

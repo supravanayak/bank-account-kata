@@ -35,20 +35,25 @@ public class CustomerController {
 	}
     
     @PostMapping("/createCustomers")
-    public Customer createCustomer(@RequestBody Customer Customer) {
-        return customerService.createCustomer(Customer);
+    public ResponseEntity<Customer> createCustomer(@RequestBody Customer customer) {
+        Customer customers = customerService.createCustomer(customer);
+        logger.info("Customer Created Sucessfully", customer);
+        return ResponseEntity.ok().body(customers);
     }
 
     @GetMapping("/getAllCustomers")
-    public List<Customer> getAllCustomers() {
-        return customerService.getAllCustomers();
+    public ResponseEntity<List<Customer>> getAllCustomers() {
+        List<Customer> customerList = customerService.getAllCustomers();
+        logger.info("Retrieved Sucessfully list of customer"+customerList);
+        return ResponseEntity.ok().body(customerList);
     }
 
     @GetMapping("/getCustomers/{id}")
-    public ResponseEntity < Customer > getCustomerById(@PathVariable(value = "id") Long CustomerId)
+    public ResponseEntity < Customer > getCustomerById(@PathVariable(value = "id") Long customerId)
     throws ResourceNotFoundException {
-        Customer customer = customerService.findById(CustomerId)
-            .orElseThrow(() -> new ResourceNotFoundException(CustomerId));        
+        Customer customer = customerService.findById(customerId)
+            .orElseThrow(() -> new ResourceNotFoundException(customerId)); 
+        logger.info("Retrieved customer details for id"+customerId+":"+customer);
         return ResponseEntity.ok().body(customer);
     }   
 
@@ -62,20 +67,22 @@ public class CustomerController {
         customer.setLastName(CustomerDetails.getLastName());
         customer.setFirstName(CustomerDetails.getFirstName());
         final Customer updatedCustomer = customerService.UpdateCusomter(customer);
+        logger.info("Customer updated :"+CustomerId);
         return ResponseEntity.ok(updatedCustomer);
     }
     
     
 
     @DeleteMapping("/Customers/{id}")
-    public Map < String, Boolean > deleteCustomer(@PathVariable(value = "id") Long CustomerId)
+    public Map < String, Boolean > deleteCustomer(@PathVariable(value = "id") Long customerId)
     throws ResourceNotFoundException {
-        Customer Customer = customerService.findById(CustomerId)
-            .orElseThrow(() -> new ResourceNotFoundException(CustomerId));
+        Customer Customer = customerService.findById(customerId)
+            .orElseThrow(() -> new ResourceNotFoundException(customerId));
 
         customerService.delete(Customer);
         Map < String, Boolean > response = new HashMap < > ();
         response.put("deleted", Boolean.TRUE);
+        logger.warn("Customer deleted for customerId :"+customerId);
         return response;
     
 }

@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import fr.ing.interview.controller.CustomerController;
 import fr.ing.interview.dao.CustomerDao;
 import fr.ing.interview.domain.Customer;
 
@@ -34,7 +33,7 @@ public class CustomerServiceImpl implements CustomerService{
 		return customerDao.findById(customerId);
 	}
 
-	
+
 	@Override
 	public void delete(Customer customer) {		
 		customerDao.delete(customer);
@@ -43,36 +42,6 @@ public class CustomerServiceImpl implements CustomerService{
 	@Override
 	public Customer UpdateCusomter(Customer customer) {
 		return customerDao.save(customer);
-	}
-
-	@Override
-	public boolean checkCustomerExists(String username, String email) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean checkUsernameExists(String username) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean checkEmailExists(String email) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public Customer findByUsername(String username) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Customer findByEmail(String email) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 }
