@@ -30,8 +30,8 @@ public class CustomerController {
     private CustomerService customerService;
     
     @GetMapping
-	public String getAccountUrlCheck() {
-    	return "Account URL is ok";
+	public String getCustomerUrlCheck() {
+    	return "Customer URL is ok";
 	}
     
     @PostMapping("/createCustomers")
@@ -47,22 +47,21 @@ public class CustomerController {
     @GetMapping("/getCustomers/{id}")
     public ResponseEntity < Customer > getCustomerById(@PathVariable(value = "id") Long CustomerId)
     throws ResourceNotFoundException {
-        Customer Customer = customerService.findById(CustomerId)
-            .orElseThrow(() -> new ResourceNotFoundException("Customer not found for this id :: " + CustomerId));
-        
-        return ResponseEntity.ok().body(Customer);
+        Customer customer = customerService.findById(CustomerId)
+            .orElseThrow(() -> new ResourceNotFoundException(CustomerId));        
+        return ResponseEntity.ok().body(customer);
     }   
 
     @PutMapping("/updateCustomers/{id}")
     public ResponseEntity < Customer > updateCustomer(@PathVariable(value = "id") Long CustomerId,
         @RequestBody Customer CustomerDetails) throws ResourceNotFoundException {
-        Customer Customer = customerService.findById(CustomerId)
-            .orElseThrow(() -> new ResourceNotFoundException("Customer not found for this id :: " + CustomerId));
+        Customer customer = customerService.findById(CustomerId)
+            .orElseThrow(() -> new ResourceNotFoundException(CustomerId));
 
-        Customer.setEmail(CustomerDetails.getEmail());
-        Customer.setLastName(CustomerDetails.getLastName());
-        Customer.setFirstName(CustomerDetails.getFirstName());
-        final Customer updatedCustomer = customerService.UpdateCusomter(Customer);
+        customer.setEmail(CustomerDetails.getEmail());
+        customer.setLastName(CustomerDetails.getLastName());
+        customer.setFirstName(CustomerDetails.getFirstName());
+        final Customer updatedCustomer = customerService.UpdateCusomter(customer);
         return ResponseEntity.ok(updatedCustomer);
     }
     
@@ -72,7 +71,7 @@ public class CustomerController {
     public Map < String, Boolean > deleteCustomer(@PathVariable(value = "id") Long CustomerId)
     throws ResourceNotFoundException {
         Customer Customer = customerService.findById(CustomerId)
-            .orElseThrow(() -> new ResourceNotFoundException("Customer not found for this id :: " + CustomerId));
+            .orElseThrow(() -> new ResourceNotFoundException(CustomerId));
 
         customerService.delete(Customer);
         Map < String, Boolean > response = new HashMap < > ();

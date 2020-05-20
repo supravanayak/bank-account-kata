@@ -1,7 +1,6 @@
 package fr.ing.interview.service;
 
 import java.math.BigDecimal;
-import java.security.Principal;
 import java.util.Date;
 
 import org.slf4j.Logger;
@@ -9,11 +8,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import fr.ing.interview.controller.CustomerController;
 import fr.ing.interview.dao.AccountDao;
 import fr.ing.interview.domain.Account;
-import fr.ing.interview.domain.Customer;
 import fr.ing.interview.domain.Transaction;
+import fr.ing.interview.exception.MinimumAmountException;
 
 @Service
 public class AccountServiceImpl implements AccountService{
@@ -25,10 +23,13 @@ public class AccountServiceImpl implements AccountService{
 	private AccountDao accountDao;
 
 	@Autowired
-	private CustomerService customerService;
-
-	@Autowired
 	private TransactionService transactionService;
+	
+	@Override
+	public Account save(Account account) {
+		return accountDao.save(account);
+	}
+
 
 	@Override
 	public Account createAccount() {
@@ -40,16 +41,22 @@ public class AccountServiceImpl implements AccountService{
 	}
 
 	@Override
-	public void deposit(Integer accountNumber, double amount) {
+	public void deposit(Integer accountNumber, double amount) throws MinimumAmountException {
 		Account account = findByAccountNumber(accountNumber) ; 
 		if(amount > DepositMoney) {
 		account.setAccountBalance(account.getAccountBalance().add(new BigDecimal(amount)));
 		accountDao.save(account);
 		Date date = new Date();
+		saveTransaction(amount, account, date);		
+		}else {
+			throw new MinimumAmountException(amount);
+		}
+	}
+
+
+	private void saveTransaction(double amount, Account account, Date date) {
 		Transaction transaction = new Transaction(date, "Deposit to Account","Account", "Finished", amount, account.getAccountBalance(), account.getAccountNumber());
 		transactionService.saveDepositTransaction(transaction);
-		}
-
 	}
 
 	@Override
@@ -58,8 +65,7 @@ public class AccountServiceImpl implements AccountService{
 		account.setAccountBalance(account.getAccountBalance().subtract(new BigDecimal(amount)));
 		accountDao.save(account);
 		Date date = new Date();
-		Transaction transaction = new Transaction(date, "Withdraw from Account","Account", "Finished", amount, account.getAccountBalance(), account.getAccountNumber());
-		transactionService.saveWithdrawTransaction(transaction);
+		saveTransaction(amount, account, date);	
 	}
 	
 	private int accountNumberGeneration() {
@@ -72,23 +78,12 @@ public class AccountServiceImpl implements AccountService{
 	}
 
 	@Override
-	public void deposit(String accountType, double amount, Principal principal) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void withdraw(String accountType, double amount, Principal principal) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
 	public BigDecimal checkAccountBalance(Integer accountNumber) {
 		Account account=findByAccountNumber(accountNumber);
 		return account.getAccountBalance();
 	}
 
+	
 
 
 
