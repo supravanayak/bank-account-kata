@@ -18,6 +18,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import fr.ing.interview.dao.TransactionDao;
 import fr.ing.interview.domain.Transaction;
+import fr.ing.interview.exception.ResourceNotFoundException;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TransactionServiceImplTest {
@@ -45,7 +46,7 @@ public class TransactionServiceImplTest {
 	}
 	
 	@Test
-	public void should_Return_ListOfTransaction_WhenAccountNumberExits() {
+	public void should_Return_ListOfTransaction_WhenAccountNumberExits() throws ResourceNotFoundException {
 		Date date = new Date();
 		Transaction transaction = new Transaction(1L,date, "Deposit to Account", "Account", "Finished", 100.0, new BigDecimal(1000), 7111333);		
 		List<Transaction> expectedTrannsaction = Arrays.asList(transaction);

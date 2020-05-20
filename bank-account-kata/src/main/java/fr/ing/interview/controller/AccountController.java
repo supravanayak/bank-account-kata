@@ -5,8 +5,6 @@ import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,7 +14,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import fr.ing.interview.domain.Account;
+import fr.ing.interview.domain.AmountTransfer;
 import fr.ing.interview.domain.BalanceInfo;
+import fr.ing.interview.domain.Receipt;
 import fr.ing.interview.exception.MinimumAmountException;
 import fr.ing.interview.exception.ResourceNotFoundException;
 import fr.ing.interview.service.AccountService;
@@ -42,23 +42,22 @@ public class AccountController {
 		return ResponseEntity.ok().body(accounts);
 	}
 
-
 	@PostMapping("/deposit")
-	public ResponseEntity<String> deposit(@Param("amount") String amount,
-			@Param("accountNumber") Integer accountNumber) throws MinimumAmountException {
-		accountService.deposit(accountNumber, Double.parseDouble(amount));
-		logger.info("Customer Deposited to accountNumber "+accountNumber+"with amount "+amount);
-		return new ResponseEntity<String>(HttpStatus.OK) ;
+	public ResponseEntity<Receipt> depositAmount(@Valid @RequestBody AmountTransfer amountTransfer) throws MinimumAmountException, ResourceNotFoundException{
+		accountService.deposit(amountTransfer.getAccountNumber(), amountTransfer.getAmmount());
+		logger.info("Customer Deposited to accountNumber "+amountTransfer.getAccountNumber()+"with amount "+amountTransfer.getAmmount());
+		return ResponseEntity.ok().body(new Receipt("Deposited Amount Successfully:"+amountTransfer.getAmmount(), Boolean.TRUE));
+		
 	}
-
+	
 	@PostMapping("/withdraw")
-	public ResponseEntity<String> withdraw(@Param("amount") String amount,
-			@Param("accountNumber") Integer accountNumber) throws ResourceNotFoundException{
-		accountService.withdraw(accountNumber, Double.parseDouble(amount));
-		logger.info("Customer withdraw from accountNumber "+accountNumber+" amount "+amount);
-		return new ResponseEntity<String>(HttpStatus.OK) ;
+	public ResponseEntity<Receipt> withdrawAmount(@Valid @RequestBody AmountTransfer amountTransfer) throws MinimumAmountException, ResourceNotFoundException{
+		accountService.withdraw(amountTransfer.getAccountNumber(), amountTransfer.getAmmount());
+		logger.info("Customer withdraw from accountNumber "+amountTransfer.getAccountNumber()+"of amount "+amountTransfer.getAmmount());
+		return ResponseEntity.ok().body(new Receipt("Amount withdraw Successfully:"+amountTransfer.getAmmount(), Boolean.TRUE));
+		
 	}
-
+	
 	@GetMapping("/checkAccountBalance/{accountNumber}")
 	public ResponseEntity<BalanceInfo> checkAccountBalance(@PathVariable(value = "accountNumber") Integer accountNumber) throws ResourceNotFoundException{
 		Account account = accountService.findByAccountNumber(accountNumber);	

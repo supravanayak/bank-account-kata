@@ -30,6 +30,7 @@ public class Account {
 	private Long id;
 	private int accountNumber;
 	private BigDecimal accountBalance;
-	private Long customerId;	
+	private Long customerId;
+	private String accountType;
 	
 }

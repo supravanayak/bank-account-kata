@@ -27,7 +27,7 @@ public class AccountDaoTest {
 	public void whenfindByAccountNumber_thenReturnAccount() {
 	    
 		/*
-		 * Account acc = new Account(1L, 64131, new BigDecimal(100), 1L);
+		 * Account acc = new Account(1L, 64131, new BigDecimal(100), 1L,"saving");
 		 * entityManager.persist(acc); entityManager.flush(); Account found =
 		 * accountDao.findByAccountNumber(acc.getAccountNumber());
 		 * assertEquals(found.getAccountBalance(), acc.getAccountNumber());

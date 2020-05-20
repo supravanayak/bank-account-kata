@@ -12,10 +12,13 @@ import fr.ing.interview.dao.AccountDao;
 import fr.ing.interview.domain.Account;
 import fr.ing.interview.domain.Transaction;
 import fr.ing.interview.exception.MinimumAmountException;
+import fr.ing.interview.exception.ResourceNotFoundException;
 
 @Service
 public class AccountServiceImpl implements AccountService{
 
+	private static final String DEPOSIT_TO_ACCOUNT = "Deposit to Account";
+	private static final String WITHDRAW_FROM_ACCOUNT = "Withdraw from Account";
 	private static final Logger logger = LoggerFactory.getLogger(AccountServiceImpl.class);
 	private static int AccountNumber = 1301089;
 	private static double DepositMoney = 0.01;
@@ -27,9 +30,9 @@ public class AccountServiceImpl implements AccountService{
 	
 	@Override
 	public Account save(Account account) {
+		account.setAccountNumber(accountNumberGeneration());
 		return accountDao.save(account);
 	}
-
 
 	@Override
 	public Account createAccount() {
@@ -42,15 +45,14 @@ public class AccountServiceImpl implements AccountService{
 	}
 
 	@Override
-	public void deposit(Integer accountNumber, double amount) throws MinimumAmountException {
+	public void deposit(Integer accountNumber, double amount) throws MinimumAmountException, ResourceNotFoundException {
 		Account account = findByAccountNumber(accountNumber) ; 
 		if(amount > DepositMoney) {
 		account.setAccountBalance(account.getAccountBalance().add(new BigDecimal(amount)));
 		accountDao.save(account);
 		logger.info("Amount Deposited :"+amount);
-		Date date = new Date();	
-		String description = "Deposit to Account";
-		saveTransaction(amount, account, date,description);	
+		Date date = new Date();			
+		saveTransaction(amount,account,date,DEPOSIT_TO_ACCOUNT);	
 		logger.info("Transaction Successful");
 		}else {
 			logger.error("Deposit money from a customer to his account, is allowed when superior to €0.01"+amount);
@@ -61,19 +63,18 @@ public class AccountServiceImpl implements AccountService{
 
 
 	private void saveTransaction(double amount, Account account, Date date,String description) {
-		Transaction transaction = new Transaction(date, description,"Account", "Finished", amount, account.getAccountBalance(), account.getAccountNumber());
+		Transaction transaction = new Transaction(date, description,account.getAccountType(), "Finished", amount, account.getAccountBalance(), account.getAccountNumber());
 		transactionService.saveDepositTransaction(transaction);
 	}
 
 	@Override
-	public void withdraw(Integer accountNumber, double amount) {
+	public void withdraw(Integer accountNumber, double amount) throws ResourceNotFoundException {
 		Account account = findByAccountNumber(accountNumber);
 		account.setAccountBalance(account.getAccountBalance().subtract(new BigDecimal(amount)));
 		accountDao.save(account);
 		logger.info("Amount withdraw completed :"+amount);
-		Date date = new Date();
-		String description = "Withdraw from Account";
-		saveTransaction(amount, account, date,description);	
+		Date date = new Date();		
+		saveTransaction(amount, account, date,WITHDRAW_FROM_ACCOUNT);	
 		logger.info("Transaction Successful");
 	}
 	
@@ -82,12 +83,12 @@ public class AccountServiceImpl implements AccountService{
 	}
 
 	@Override
-	public Account findByAccountNumber(int accountNumber) {		
+	public Account findByAccountNumber(int accountNumber) throws ResourceNotFoundException{		
 		return accountDao.findByAccountNumber(accountNumber);
 	}
 
 	@Override
-	public BigDecimal checkAccountBalance(Integer accountNumber) {
+	public BigDecimal checkAccountBalance(Integer accountNumber) throws ResourceNotFoundException {
 		Account account=findByAccountNumber(accountNumber);
 		return account.getAccountBalance();
 	}

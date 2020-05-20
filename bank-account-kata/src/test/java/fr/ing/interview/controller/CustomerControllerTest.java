@@ -54,9 +54,7 @@ public class CustomerControllerTest {
 
 	@Test
 	public void createCustomerApiTest() throws Exception, JsonProcessingException, Exception {
-		Customer customer = new Customer(1L, "Suprava", "Suprava", "Suprava", "Nayak", "suprava.nayak@gmail.com", "6462323");
-		
-		
+		Customer customer = new Customer(1L, "Suprava", "Suprava", "Suprava", "Nayak", "suprava.nayak@gmail.com", "6462323");	
 		  String res = mockMvc.perform(post("/customer/createCustomers")
 		  .content(mapper.writeValueAsString(customer))
 		  .contentType(MediaType.APPLICATION_JSON)) .andExpect(status().isOk())

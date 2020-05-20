@@ -24,18 +24,21 @@ public class AccountServiceImplTest {
 
 	@Test
 	public void createAccounttest() {
-		Account account = new Account(1L, 7111333, new BigDecimal(10), 1L);
+		Account account = new Account(1L, 7111333, new BigDecimal(10), 1L,"saving");
 		accountService.save(account);         
 		verify(accountDao, times(1)).save(account);
 	}
 
 	@Test
-	public void should_Deposite_Amount_Return_AccountBalance() {
+	public void should_Return_success_When_AmountDeposited() {
+		//Account account = new Account(1L, 7111333, new BigDecimal(10), 1L,"saving");
 		
+	
 	}
 
 	@Test
-	public void should_Withdraw_Amount_Return_AccountBalance() {
+	public void should_Return_success_When_amountWithdraw() {
+		//Account account = new Account(1L, 7111333, new BigDecimal(10), 1L,"saving");
 
 	}
 	

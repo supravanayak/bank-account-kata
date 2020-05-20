@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import fr.ing.interview.dao.TransactionDao;
 import fr.ing.interview.domain.Transaction;
+import fr.ing.interview.exception.ResourceNotFoundException;
 
 @Service
 public class TransactionServiceImpl implements TransactionService{
@@ -30,7 +31,7 @@ public class TransactionServiceImpl implements TransactionService{
 	}
 
 	@Override
-	public List<Transaction> findByAccountNumber(int accountNumber) {
+	public List<Transaction> findByAccountNumber(int accountNumber) throws ResourceNotFoundException{
 		logger.info("Retrieve Transaction details for:"+accountNumber);
 		List<Transaction> transactionList = transactionDao.findByAccountNumber(accountNumber);
 		return transactionList;

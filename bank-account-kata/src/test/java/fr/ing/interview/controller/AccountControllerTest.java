@@ -23,12 +23,13 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fr.ing.interview.domain.Account;
+import fr.ing.interview.domain.AmountTransfer;
 import fr.ing.interview.service.AccountService;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(AccountController.class)
 public class AccountControllerTest {
-	//private static final Logger logger = LoggerFactory.getLogger(CustomerControllerTest.class);
+	//private static final Logger logger = LoggerFactory.getLogger(AccountControllerTest.class);
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -48,28 +49,35 @@ public class AccountControllerTest {
 
 	@Test
 	public void createAccountTest() throws Exception{
-		Account account = new Account(1L,007111333,new BigDecimal(100),1L);
+		Account account = new Account(1L,007111333,new BigDecimal(100),1L,"saving");
 		String jsonRequest = mapper.writeValueAsString(account);
 		mockMvc.perform(MockMvcRequestBuilders.post("/account/createAccount").content(jsonRequest).contentType(MediaType.APPLICATION_JSON_VALUE))
 		.andExpect(MockMvcResultMatchers.status().isOk()).andReturn();
 	}
 
-	/*
-	 * @Test public void moneyDeposittest() throws Exception { mockMvc.perform(
-	 * MockMvcRequestBuilders
-	 * .post("/account/deposit/amount=100&accountNumber=007111333")
-	 * .contentType(MediaType.APPLICATION_JSON) .accept(MediaType.APPLICATION_JSON))
-	 * .andExpect(status().isCreated()); }
-	 * 
-	 * @Test public void moneyWithdrawtest() throws Exception { mockMvc.perform(
-	 * MockMvcRequestBuilders
-	 * .post("/account/withdraw/amount=100&accountNumber=007111333")
-	 * .contentType(MediaType.APPLICATION_JSON) .accept(MediaType.APPLICATION_JSON))
-	 * .andExpect(status().isCreated()); }
-	 */
+
+	@Test 
+	public void moneyDepositTest() throws Exception {
+		AmountTransfer amountDeposit = new AmountTransfer(007111333, 10.0, "deposit");
+		String jsonRequest = mapper.writeValueAsString(amountDeposit);
+		mockMvc.perform(
+				MockMvcRequestBuilders.post("/account/deposit").content(jsonRequest)
+				.contentType(MediaType.APPLICATION_JSON))
+		.andExpect(status().isOk()).andReturn(); }
+
+	@Test
+	public void moneyWithdrawtest() throws Exception {
+		AmountTransfer amountWithdraw = new AmountTransfer(007111333, 10.0, "withdraw");
+		String jsonRequest = mapper.writeValueAsString(amountWithdraw);
+		mockMvc.perform(
+				MockMvcRequestBuilders.post("/account/withdraw").content(jsonRequest)
+				.contentType(MediaType.APPLICATION_JSON))
+		.andExpect(status().isOk()).andReturn(); }
+
+
 	@Test
 	public void should_GetBalance_When_ValidRequest() throws Exception{
-		Account account = new Account(1L,007111333,new BigDecimal(100),1L);		 
+		Account account = new Account(1L,007111333,new BigDecimal(100),1L,"saving");		 
 		when(accountService.findByAccountNumber(1)).thenReturn(account);
 		mockMvc.perform(get("/account/checkAccountBalance/1") 
 				.accept(MediaType.APPLICATION_JSON))
@@ -77,7 +85,7 @@ public class AccountControllerTest {
 		.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
 		.andExpect(jsonPath("$.accountNumber").value(007111333))
 		.andExpect(jsonPath("$.accountBalance").value(new BigDecimal(100)));
-		
+
 	}
 
 	/*
@@ -86,4 +94,5 @@ public class AccountControllerTest {
 	 * .accept(MediaType.APPLICATION_JSON)) .andDo(print())
 	 * .andExpect(status().isNotFound()); }
 	 */
+	 
 }
