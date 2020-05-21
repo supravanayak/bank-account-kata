@@ -7,9 +7,10 @@ import fr.ing.interview.exception.ResourceNotFoundException;
 
 public interface TransactionService {
 	
-	List<Transaction> findByAccountNumber(int accountNumber) throws ResourceNotFoundException;
+	List<Transaction> findTransactionByAccountNumber(int accountNumber) throws ResourceNotFoundException;
 	void saveDepositTransaction(Transaction Transaction);
 	void saveWithdrawTransaction(Transaction Transaction);
+	List<Transaction> findTransactionByCustomerId(Long customerId) throws ResourceNotFoundException;
 
 	
 }

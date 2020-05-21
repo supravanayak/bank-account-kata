@@ -14,4 +14,16 @@ import lombok.Setter;
 public class BalanceInfo {
 	private int accountNumber;
 	private BigDecimal accountBalance;
+	private long customerId;
+	public BalanceInfo(int accountNumber, BigDecimal accountBalance) {
+		super();
+		this.accountNumber = accountNumber;
+		this.accountBalance = accountBalance;
+	}
+	public BalanceInfo(BigDecimal accountBalance, long customerId) {
+		super();
+		this.accountBalance = accountBalance;
+		this.customerId = customerId;
+	}
+	
 }

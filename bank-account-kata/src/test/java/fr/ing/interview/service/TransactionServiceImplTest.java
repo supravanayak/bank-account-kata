@@ -40,7 +40,7 @@ public class TransactionServiceImplTest {
 	@Test
 	public void saveWithdrawTransaction() {
 		Date date = new Date();
-		Transaction transaction = new Transaction(1L,date, "Deposit to Account", "Account", "Finished", 100.0, new BigDecimal(1000), 7111333);
+		Transaction transaction = new Transaction(1L,date, "withdraw to Account", "Account", "Finished", 100.0, new BigDecimal(1000), 7111333);
 		transactionService.saveWithdrawTransaction(transaction);         
         verify(transactionDao, times(1)).save(transaction);
 	}
@@ -51,8 +51,8 @@ public class TransactionServiceImplTest {
 		Transaction transaction = new Transaction(1L,date, "Deposit to Account", "Account", "Finished", 100.0, new BigDecimal(1000), 7111333);		
 		List<Transaction> expectedTrannsaction = Arrays.asList(transaction);
 		when(transactionDao.findByAccountNumber(7111333)).thenReturn(expectedTrannsaction);               
-        List<Transaction> actualTransaction = transactionService.findByAccountNumber(7111333);        
+        List<Transaction> actualTransaction = transactionService.findTransactionByAccountNumber(7111333);        
         assertThat(actualTransaction).isEqualTo(expectedTrannsaction);
-	}
+	}	
 
 }

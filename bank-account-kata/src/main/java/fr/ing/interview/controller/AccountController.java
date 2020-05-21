@@ -61,8 +61,16 @@ public class AccountController {
 	@GetMapping("/checkAccountBalance/{accountNumber}")
 	public ResponseEntity<BalanceInfo> checkAccountBalance(@PathVariable(value = "accountNumber") Integer accountNumber) throws ResourceNotFoundException{
 		Account account = accountService.findByAccountNumber(accountNumber);	
-		logger.info("Customer Total Account Balance :"+account.getAccountBalance());
-		return ResponseEntity.ok().body(new BalanceInfo(account.getAccountNumber(), account.getAccountBalance()));	
+		logger.info("Customer Total Account Balance By AccountNumber:"+account.getAccountBalance());
+		return ResponseEntity.ok().body(new BalanceInfo(account.getAccountNumber(), account.getAccountBalance(),account.getCustomerId()));	
 	}
+	
+	@GetMapping("/checkCustomerAccountBalance/{customerId}")
+	public ResponseEntity<BalanceInfo> checkCustomerAccountBalance(@PathVariable(value = "customerId") Long customerId) throws ResourceNotFoundException{
+		BalanceInfo balanceInfo = accountService.checkAccountBalancedByCustomerId(customerId);	
+		logger.info("Customer All Account Total Balance :"+balanceInfo.getAccountBalance());
+		return ResponseEntity.ok().body(balanceInfo);	
+	}
+	
 
 }

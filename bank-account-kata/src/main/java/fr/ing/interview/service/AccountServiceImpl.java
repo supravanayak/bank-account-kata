@@ -2,6 +2,9 @@ package fr.ing.interview.service;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import fr.ing.interview.dao.AccountDao;
 import fr.ing.interview.domain.Account;
+import fr.ing.interview.domain.BalanceInfo;
 import fr.ing.interview.domain.Transaction;
 import fr.ing.interview.exception.MinimumAmountException;
 import fr.ing.interview.exception.ResourceNotFoundException;
@@ -27,7 +31,7 @@ public class AccountServiceImpl implements AccountService{
 
 	@Autowired
 	private TransactionService transactionService;
-	
+
 	@Override
 	public Account save(Account account) {
 		account.setAccountNumber(accountNumberGeneration());
@@ -48,16 +52,16 @@ public class AccountServiceImpl implements AccountService{
 	public void deposit(Integer accountNumber, double amount) throws MinimumAmountException, ResourceNotFoundException {
 		Account account = findByAccountNumber(accountNumber) ; 
 		if(amount > DepositMoney) {
-		account.setAccountBalance(account.getAccountBalance().add(new BigDecimal(amount)));
-		accountDao.save(account);
-		logger.info("Amount Deposited :"+amount);
-		Date date = new Date();			
-		saveTransaction(amount,account,date,DEPOSIT_TO_ACCOUNT);	
-		logger.info("Transaction Successful");
+			account.setAccountBalance(account.getAccountBalance().add(new BigDecimal(amount)));
+			accountDao.save(account);
+			logger.info("Amount Deposited :"+amount);
+			Date date = new Date();			
+			saveTransaction(amount,account,date,DEPOSIT_TO_ACCOUNT);	
+			logger.info("Transaction Successful");
 		}else {
 			logger.error("Deposit money from a customer to his account, is allowed when superior to €0.01"+amount);
 			throw new MinimumAmountException(amount);
-			
+
 		}
 	}
 
@@ -77,14 +81,20 @@ public class AccountServiceImpl implements AccountService{
 		saveTransaction(amount, account, date,WITHDRAW_FROM_ACCOUNT);	
 		logger.info("Transaction Successful");
 	}
-	
+
 	private int accountNumberGeneration() {
 		return ++AccountNumber;
 	}
 
 	@Override
 	public Account findByAccountNumber(int accountNumber) throws ResourceNotFoundException{		
-		return accountDao.findByAccountNumber(accountNumber);
+		Account accountOptional = Optional.ofNullable(accountDao.findByAccountNumber(accountNumber))
+				.orElseThrow(() -> new ResourceNotFoundException((long) (accountNumber)));
+		Optional.of(accountOptional).ifPresent(acc -> {
+			logger.info("Account Number Exist = " + accountOptional.getAccountNumber());   
+		});
+
+		return accountOptional;
 	}
 
 	@Override
@@ -93,9 +103,20 @@ public class AccountServiceImpl implements AccountService{
 		return account.getAccountBalance();
 	}
 
-	
+	@Override
+	public BalanceInfo checkAccountBalancedByCustomerId(Long customerId) throws ResourceNotFoundException{
+		List<Account> accountList = findAccountNumberByCustomerId(customerId);
+		if(accountList.isEmpty()) {
+			throw new ResourceNotFoundException(customerId);
+		}
+		double balance = accountList.stream().mapToDouble(c -> c.getAccountBalance().longValue()).sum();	
+		logger.info("Account Balance for:"+customerId+" "+balance);		
+		return new BalanceInfo(new BigDecimal(balance),customerId);
+	}
 
-
-
+	public List<Account> findAccountNumberByCustomerId(Long customerId) {
+		Optional<List<Account>> accountList=Optional.of(accountDao.findByCustomerId(customerId));
+		return accountList.get();
+	}
 
 }
